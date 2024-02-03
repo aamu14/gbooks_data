@@ -10,7 +10,7 @@ import numpy as np
 
 # Configure
 st.set_page_config(
-    page_title=:book:"Google Book Dataset Analysis":book:,
+    page_title="📚Google Book Dataset Analysis📚",
     layout="wide"
 )
 st.title('Googe Book Dataset Analysis')
