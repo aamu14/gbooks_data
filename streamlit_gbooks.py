@@ -191,7 +191,7 @@ if ibook1 == 'authors':
     plt.axis('equal')  # Ensure a circular pie chart
 
     # Show the graph with a custom figure size
-    st.pyplot(author_pie, clear_figure=True, use_container_width=True)  
+    st.pyplot(author_pie, clear_figure=True)
     st.markdown("""
     Take a look at the numbers — 767 books have names of authors listed, but 258 books don't. There could be a few reasons behind this. Some older books might not have complete author details recorded. Also, it's possible that mistakes were made when recording information, like forgetting to note down the author's name. It's interesting to see how factors like the age of the books and human errors can play a role in whether or not we have information about the authors.
     """)
@@ -772,7 +772,7 @@ In this column, I processed and categorized the data based on published years, g
     st.markdown("""
     With this graph, we can clearly see the trend, demonstrating an increasing exponentially in book publications each year. It also indicates that the dataset dominantly consists of newer books rather than older ones.
    """)
-
+st.markdown("""---""")
 st.header("""Conclusion""")
 st.markdown("""
 1. The dataset initially comprises 1025 rows and 9 columns. However, further data manipulation and cleaning will be necessary due to missing values and varying formats in certain columns. These issues must be addressed before conducting any analysis.
