@@ -539,7 +539,7 @@ elif ibook1 == 'averageRating':
     unknown_count = unknown_rating_df['averageRating'].value_counts().get('No Rating', 0)
     
     # Combine known counts and unknown count
-    combined_counts = known_counts.append(pd.Series({'No Rating': unknown_count}))
+    combined_counts = known_counts._append(pd.Series({'No Rating': unknown_count}))
 
     # Create the bar plot
     average_bar= plt.figure(figsize=(15, 7))
