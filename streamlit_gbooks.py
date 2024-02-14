@@ -64,7 +64,7 @@ data_type, missing_before = st.columns(2, gap="small")
 
 with data_type:
     st.subheader("Data Type")
-    st.write(my_data.dtypes)
+    st.dataframe(my_data.dtypes)
 with missing_before:
     st.subheader("Before cleaned")
     st.write(missing_values_report_before)
