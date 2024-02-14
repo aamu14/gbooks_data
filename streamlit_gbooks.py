@@ -41,7 +41,7 @@ my_data = pd.read_csv("google_books_dataset.csv")
 st.markdown("""
             First, let's see how the dataset looks like.
 """)
-st.dataframe(my_data)
+st.write(my_data)
 
 st.markdown("""
             This table has 1025 rows and 9 columns. From the table above, it is evident that some columns contain missing values, different formats, and possibly dirty data. Next, I will perform data cleaning and manipulation to prepare the data for use.
