@@ -41,7 +41,7 @@ my_data = pd.read_csv("google_books_dataset.csv")
 st.markdown("""
             First, let's see how the dataset looks like.
 """)
-st.write(my_data.head())
+st.dataframe(my_data)
 
 st.markdown("""
             This table has 1025 rows and 9 columns. From the table above, it is evident that some columns contain missing values, different formats, and possibly dirty data. Next, I will perform data cleaning and manipulation to prepare the data for use.
@@ -51,63 +51,169 @@ st.markdown("""---""")
 st.header("Data Cleaning and Data Manipulation")
 # Drop the first column
 my_data = my_data.iloc[:, 1:]
-
-st.markdown("""
-            In the analysis of the table, columns with empty data will be converted to NA. Let's compare the data before and after cleaning to see the effect of the process.
-""")
-
-# Replace empty strings with NaN
-my_data = my_data.replace('', np.nan)
-# Extract text within brackets
-my_data['extracted_authors'] = my_data['authors'].str.extract(r"\[(.*?)\]")
-my_data['extracted_authors'].fillna("Not Available", inplace=True)
-# Modify the extraction regex to exclude quotes
-my_data['extracted_authors'] = my_data['authors'].str.extract(r"'(.*?)'")
-my_data['extracted_authors'].fillna("Not Available", inplace=True)
-my_data['extracted_authors'] = my_data['extracted_authors'].apply(str)
-
 # Replace empty strings with NaN
 my_data = my_data.replace('', np.nan)
 missing_values_report_before = my_data.isnull().sum().to_frame(name='Missing Values')
 missing_values_report_before['% Missing'] = (missing_values_report_before['Missing Values'] / len(my_data)) * 100
 
-my_data['categories'] = my_data['categories'].str.extract(r"'([^']*)'")
+st.markdown("""
+            Before doing some manipulation, let's explore the data a little bit. we need to see the data type of each column and how much the missing value.
+""")
+
+data_type, missing_before = st.columns(2, gap="small")
+
+with data_type:
+    st.subheader("Data Type")
+    st.write(my_data.dtypes)
+with missing_before:
+    st.subheader("Before cleaned")
+    st.write(missing_values_report_before)
+
+
+# Replace empty strings with NaN
+st.markdown("""First, i will replace all the empty strings with NaN, but it might not be showed in streamlit. After that, i will extract the authors name into a new column named extracted_authors. this extraction is using regex to extract the name from bracket and quotation.""")
+my_data = my_data.replace('', np.nan)
+# Replace empty strings with NaN
+my_data = my_data.replace('', np.nan)
+missing_values_report_before = my_data.isnull().sum().to_frame(name='Missing Values')
+missing_values_report_before['% Missing'] = (missing_values_report_before['Missing Values'] / len(my_data)) * 100
+
+# Extract text within brackets
+my_data['extracted_authors'] = my_data['authors'].str.extract(r"\[(.*?)\]")
+my_data['extracted_authors'].fillna("Not Available", inplace=True)
+# Modify the extraction regex to exclude quotes
+my_data['extracted_authors'] = my_data['authors'].str.extract(r"'(.*?)'")
+col_author, col_extract = st.columns(2, gap="small")
+with col_author:
+    st.subheader("Before Extracted")
+    st.write(my_data['authors'].head())
+with col_extract:
+    st.subheader("After Extracted")
+    st.write(my_data['extracted_authors'].head())
+
+#change NA with Not Available
+st.markdown("""Since NA would make the analysis harder, i will change the NA with 'Not Available' in extracted_authors """)
+extracted_before = my_data['extracted_authors'].copy()
+my_data['extracted_authors'].fillna("Not Available", inplace=True)
+my_data['extracted_authors'] = my_data['extracted_authors'].apply(str)
+col_author, col_extract = st.columns(2, gap="small")
+with col_author:
+    st.subheader("Before")
+    st.write(extracted_before.head())
+with col_extract:
+    st.subheader("After")
+    st.write(my_data['extracted_authors'].head())
+
+st.markdown("""Next, since the authors column still contain dirty data, i will change the entire column into 'Not Available' for books without authors name and 'Available' for books with authors name """)
+
 def replace_authors(authors):
   if pd.isna(authors):
     return "Not Available"
   else:
     return "Available"
-
+author_before= my_data['authors'].copy()
 my_data['authors'] = my_data['authors'].apply(replace_authors)
+
+col_author_before, col_author_after = st.columns(2, gap="small")
+with col_author_before:
+    st.subheader("Before")
+    st.write(author_before.head())
+with col_author_after:
+    st.subheader("After")
+    st.write(my_data['authors'].head())
+
+st.markdown("""Next, let's move to categories column. it has the similar problem with authors column. I will extract it with regex and change the NA value into 'Not Categorized'. """)
+cat_before = my_data['categories'].copy()
+my_data['categories'] = my_data['categories'].str.extract(r"'([^']*)'")
 my_data['categories'].fillna("Not Categorized", inplace=True)
-my_data['averageRating'] = my_data['averageRating'].astype(str)
+
+col_cat_before, col_cat_after = st.columns(2, gap="small")
+with col_cat_before:
+    st.subheader("Before")
+    st.write(cat_before.head())
+with col_cat_after:
+    st.subheader("After")
+    st.write(my_data['categories'].head())
+
+st.markdown("""Next, let's move to averageRating column. the empty rating will be replaced with 'No Rating'. Also, in this column the type should be float, but i need to change it into a string because this column will contain a mixed data between numbers and text. """)
+avg_rate_before = my_data['averageRating'].copy()
 my_data['averageRating'].fillna("No Rating", inplace=True)
-my_data['publisher'].fillna("No Identified", inplace=True)
+my_data['averageRating'] = my_data['averageRating'].astype(str)
+
+col_avg_before, col_avg_after = st.columns(2, gap="small")
+with col_avg_before:
+    st.subheader("Before")
+    st.write(avg_rate_before.head())
+with col_avg_after:
+    st.subheader("After")
+    st.write(my_data['averageRating'].head())
+
+st.markdown("""In publisher column, we only need to change the empty publisher with 'Not Identified'. """)
+pub_before= my_data['publisher'].copy()
+my_data['publisher'].fillna("Not Identified", inplace=True)
+
+col_pub_before, col_pub_after = st.columns(2, gap="small")
+with col_pub_before:
+    st.subheader("Before")
+    st.write(pub_before.head())
+with col_pub_after:
+    st.subheader("After")
+    st.write(my_data['publisher'].head())
+
+st.markdown("""The "publishedDate" column contains the date when the book was published. This column exhibits various formats, such as YYYYMMDD, YYYYMM, YYYY, or being empty. To address this variability, I will create a new column named "publishedYear" to exclusively store the publication year. For entries with empty dates, the year will be denoted as 'Unknown'.  """)
 my_data['publishedDate'].fillna("Unknown", inplace=True)
 my_data['publishedDate'] = my_data['publishedDate'].astype(str)
 my_data['publishedYear'] = my_data['publishedDate'].str[:4]  # Extract first 4 characters
 my_data.loc[my_data['publishedDate'] == 'Unknown', 'publishedYear'] = 'Unknown'
 
+before_date = my_data['publishedDate'].copy()
+
+col_date_before, col_year_after = st.columns(2, gap="small")
+with col_date_before:
+    st.subheader("Before")
+    st.write(before_date.head())
+with col_year_after:
+    st.subheader("After")
+    st.write(my_data['publishedYear'].head())
+
+
+
+st.markdown("""Since pageCount have so many varities in that column, it might make us hard to visualize and understand the data. so i will make a new column named 'NewpageCount' and make a new category for these page count. there are several book page categories: 
+1. 0 - 100 pages = Very Short \n
+2. 100 - 300 pages = Short \n
+3. 300 - 500 pages = Medium \n
+4. 500 - 800 pages = Long \n
+5. 800 - 1500 pages = Very Long \n
+6. more than 1500 pages = Epic \n
+7. no pageCount = Not Counted
+            """)
 # Create a copy of the DataFrame to avoid modifying the original
 new_data = my_data.copy()
-
 # Create the new column in the copied DataFrame
 new_data['NewpageCount'] = pd.NA  # Initialize with NA
-
 # Handle "Not Counted" values
-new_data.loc[new_data['pageCount'] == 'Not Counted', 'NewpageCount'] = "Not Counted"  # Assign "Not Counted" category
-
+new_data.loc[new_data['pageCount'] == 'Not Counted', 'NewpageCount'] = "Not Counted"  
+# Assign "Not Counted" category
 # Classify known page counts
+page_before = my_data['pageCount'].copy()
 classification_ranges = [0, 100, 300, 500, 800, 1500, float('inf')]  # Adjust as needed
 classification_labels = ['Very Short', 'Short', 'Medium', 'Long', 'Very Long', 'Epic']
 new_data.loc[new_data['pageCount'] != 'Not Counted', 'NewpageCount'] = pd.cut(new_data.loc[new_data['pageCount'] != 'Not Counted', 'pageCount'], bins=classification_ranges, labels=classification_labels)
 
 # Convert NewpageCount to string
 new_data['NewpageCount'] = new_data['NewpageCount'].astype(str)
-
 # Replace 'nan' with 'Not Counted' in all string columns
 new_data = new_data.replace('nan', 'Not Counted', regex=False)  # Use regex=False for exact matching
-new_data['averageRating'] = new_data['averageRating'].replace('Not Counted', 'No Rating', regex=False)  # Use regex=False for exact matching
+
+col_page_before, col_page_after = st.columns(2, gap="small")
+with col_page_before:
+    st.subheader("Before")
+    st.write(page_before.head())
+with col_page_after:
+    st.subheader("After")
+    st.write(new_data['NewpageCount'].head())
+
+st.markdown("""Since we don’t need the ‘pageCount’ and ‘publishedDate’ columns, I will delete them. To ensure that we have thoroughly cleaned all the data, let’s compare the missing values before and after the cleaning process""")
 
 # Delete the 'pageCount' column from the copied DataFrame
 del new_data['pageCount']
@@ -130,7 +236,7 @@ with col2:
 #Check Missing Value Before Cleaned
 
 st.markdown("""
-            It can be seen that there are several columns with missing data, including columns such as authors, categories, averageRating, publisher, publishedDate, and pageCount. i will do some data manipulatins. The steps to handle these data are as follows:
+Now we are done on data cleaning and manipulation. the data is ready to use. but before we move to visualization of the data, let's see what already we do before:
 
 1. authors: Adjustment will be made based on the data. If the data contains the author's name(s), it will be labeled as 'Available'. If not, it will be labeled as 'Not Available'. \n
 2. extracted_authors: This new column is created by extracting data from authors column using regex. The difference from the 'authors' column is that all entries in the 'authors' column will be labeled as either 'Available' or 'Not Available,' whereas the 'extracted_authors' column will retain the actual names of the authors for other purposes.
@@ -140,7 +246,7 @@ st.markdown("""
 6. publishedDate: Any missing values will be labeled as 'Unknown' and this column will be extracted into year only. this column will be changed into 'publishedYear'. \n
 7. pageCount: Any missing values will be labeled as 'Not Counted'. The result will be changed into page interval and make a new categories based on how many pages the books have. it will be saved into 'NewpageCount'. \n
 
-Here is the data after being cleaned:
+Finally, here is the data after being cleaned:
 """)
 # Define the desired column order
 column_order = ['title','authors', 'extracted_authors', 'language', 'categories', 'NewpageCount', 'maturityRating', 'averageRating', 'publisher', 'publishedYear']
