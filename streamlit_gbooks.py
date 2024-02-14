@@ -59,12 +59,12 @@ missing_values_report_before['% Missing'] = (missing_values_report_before['Missi
 st.markdown("""
             Before doing some manipulation, let's explore the data a little bit. we need to see the data type of each column and how much the missing value.
 """)
-
+data_type_check = my_data.dtypes
 data_type, missing_before = st.columns(2, gap="small")
 
 with data_type:
     st.subheader("Data Type")
-    st.dataframe(my_data.dtypes)
+    st.dataframe(data_type_check)
 with missing_before:
     st.subheader("Before cleaned")
     st.write(missing_values_report_before)
