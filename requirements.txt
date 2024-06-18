@@ -4,4 +4,3 @@ pandas==1.4.2
 pillow
 streamlit-aggrid
 seaborn
-numpy==1.18.5
