@@ -1,4 +1,4 @@
-pip install numpy
+
 import streamlit as st
 import subprocess
 import matplotlib.pyplot as plt
