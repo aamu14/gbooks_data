@@ -1,6 +1,6 @@
 streamlit==1.12.0
 matplotlib
-pandas==1.5.3
+pandas==2.2.2
 pillow
 streamlit-aggrid
 seaborn
